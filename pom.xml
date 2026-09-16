@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.empresa</groupId>
+  <artifactId>nomina_Vaquio_Lineres</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  
+  
+  <properties>
+        <maven.compiler.release>22</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <failOnMissingWebXml>false</failOnMissingWebXml>
+  </properties>
+  
+  <dependencies>
+		<!-- 1. Implementación de JSF 4.0 (Mojarra) necesaria para Tomcat -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.faces</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+
+        <!-- 2. Motor CDI (Weld) indispensable para que funcionen @Named y @ViewScoped en Tomcat -->
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet-core</artifactId>
+            <version>5.1.0.Final</version>
+        </dependency>
+
+        <!-- 3. PrimeFaces (Compatible con JSF 4.0 / Jakarta EE 10) -->
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>13.0.5</version>
+            <classifier>jakarta</classifier>
+        </dependency>
+
+        <!-- 4. Jackson Databind (Para la lectura y procesamiento eficiente del JSON) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.17.0</version>
+        </dependency>
+        <dependency>
+        	<groupId>componentes.taller1</groupId>
+        	<artifactId>taller1</artifactId>
+        	<version>0.0.1-SNAPSHOT</version>
+        </dependency>
+  </dependencies>
+  
+  
+</project>

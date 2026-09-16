@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    Cabecera + banner comunes a todas las vistas.
+    Se incluye con:
+        <ui:include src="/WEB-INF/includes/cabecera.xhtml">
+            <ui:param name="activo"    value="inicio | estudiante | admin" />
+            <ui:param name="seccion"   value="..." />
+            <ui:param name="titulo"    value="..." />
+            <ui:param name="subtitulo" value="..." />
+        </ui:include>
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <div class="udd-cabecera">
+        <div class="udd-cabecera-int">
+
+            <h:link outcome="index" styleClass="udd-marca">
+                <h:graphicImage library="images" name="escudo-dodo.png"
+                                alt="Escudo de la Universidad del Dodo"
+                                styleClass="udd-escudo" />
+                <span class="udd-marca-txt">
+                    <span class="udd-marca-nombre">Universidad del Dodo</span>
+                    <span class="udd-marca-sede">Bogot&#225; D.C. &#183; Registro Acad&#233;mico</span>
+                </span>
+            </h:link>
+
+        </div>
+    </div>
+
+    <div class="udd-banner">
+        <div class="udd-banner-int">
+            <p class="udd-banner-tag">#{seccion}</p>
+            <h1 class="udd-banner-tit">#{titulo}</h1>
+            <p class="udd-banner-sub">#{subtitulo}</p>
+        </div>
+    </div>
+
+</ui:composition>
