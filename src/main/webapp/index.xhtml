@@ -4,78 +4,81 @@
       xmlns:f="jakarta.faces.core"
       xmlns:p="http://primefaces.org/ui">
 <h:head>
-    <title>Sistema de Nómina - PrimeFaces</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 20px; }
-        .panel-centrado { max-width: 1000px; margin: 0 auto 30px auto; }
-        .panel-ancho { max-width: 1400px; margin: 0 auto 30px auto; }
-        .resultado-panel { background-color: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 20px; }
-
-        /* Contenedor con scroll horizontal para que la tabla no se vea cortada */
-        .tabla-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .tabla-scroll .ui-datatable-tablewrapper table { min-width: 1350px; }
-    </style>
+    <title>Sistema de Gestión de Nómina</title>
+    <h:outputStylesheet library="css" name="estilos.css" />
 </h:head>
 <h:body>
-    <h:form id="frmNomina">
-        <p:growl id="mensajes" showDetail="true" life="4000" />
 
-        <!-- 1. PANEL DEL FORMULARIO -->
-        <p:panel header="#{nominaBean.modoEdicion ? 'Editar Nómina' : 'Registrar y Calcular Nómina'}" styleClass="panel-centrado">
-            <p:panelGrid columns="4" layout="grid">
+    <div class="pagina-cabecera">
+        <h1>Sistema de Gestión de Nómina</h1>
+        <p class="pagina-subtitulo">Registra, calcula y consulta el histórico de nóminas de los empleados.</p>
+    </div>
 
-                <p:outputLabel value="Identificación:" />
-                <p:inputText value="#{nominaBean.identificacion}" required="true" requiredMessage="Falta ID"
-                             disabled="#{nominaBean.modoEdicion}" maxlength="15"
-                             validatorMessage="La identificación debe contener solo números.">
-                    <p:keyFilter mask="num" />
-                    <f:validateRegex pattern="^\d+$" />
-                </p:inputText>
+    <div class="contenedor-nomina">
+        <h:form id="frmNomina">
+            <p:growl id="mensajes" showDetail="true" life="4000" />
 
-                <p:outputLabel value="Nombres:" />
-                <p:inputText value="#{nominaBean.nombres}" required="true" requiredMessage="Faltan nombres"
-                             validatorMessage="Los nombres solo deben contener letras.">
-                    <p:keyFilter regEx="/[a-zA-ZÁÉÍÓÚÜáéíóúüÑñ\s]/" />
-                    <f:validateRegex pattern="^[A-Za-zÁÉÍÓÚÜáéíóúüÑñ]+(\s[A-Za-zÁÉÍÓÚÜáéíóúüÑñ]+)*$" />
-                </p:inputText>
+            <!-- 1. FORMULARIO DE REGISTRO / EDICIÓN -->
+            <p:panel header="#{nominaBean.modoEdicion ? 'Editar Registro de Nómina' : 'Registrar y Calcular Nómina'}"
+                     styleClass="panel-centrado">
 
-                <p:outputLabel value="Apellidos:" />
-                <p:inputText value="#{nominaBean.apellidos}" required="true" requiredMessage="Faltan apellidos"
-                             validatorMessage="Los apellidos solo deben contener letras.">
-                    <p:keyFilter regEx="/[a-zA-ZÁÉÍÓÚÜáéíóúüÑñ\s]/" />
-                    <f:validateRegex pattern="^[A-Za-zÁÉÍÓÚÜáéíóúüÑñ]+(\s[A-Za-zÁÉÍÓÚÜáéíóúüÑñ]+)*$" />
-                </p:inputText>
+                <p:panelGrid columns="4" layout="grid" styleClass="ui-fluid">
 
-                <p:outputLabel value="Correo:" />
-                <p:inputText value="#{nominaBean.correo}" required="true" requiredMessage="Falta correo"
-                             validatorMessage="El correo no tiene un formato válido (ejemplo: usuario@dominio.com).">
-                    <f:validateRegex pattern="^[\w.+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$" />
-                </p:inputText>
+                    <p:outputLabel value="Identificación:" for="txtDocId" />
+                    <p:inputText id="txtDocId" value="#{nominaBean.nomina.empleado.docId}" required="true"
+                                 requiredMessage="Falta la identificación." disabled="#{nominaBean.modoEdicion}"
+                                 maxlength="15" validatorMessage="La identificación debe contener solo números.">
+                        <p:keyFilter mask="num" />
+                        <f:validateRegex pattern="^\d+$" />
+                    </p:inputText>
 
-                <p:outputLabel value="Salario Básico:" />
-                <p:selectOneMenu value="#{nominaBean.salarioBasico}" required="true" requiredMessage="Seleccione salario">
-                    <f:selectItem itemLabel="Seleccione..." itemValue="" noSelectionOption="true" />
-                    <f:selectItem itemLabel="$ 1.750.000" itemValue="1750000" />
-                    <f:selectItem itemLabel="$ 2.000.000" itemValue="2000000" />
-                    <f:selectItem itemLabel="$ 2.500.000" itemValue="2500000" />
-                    <f:selectItem itemLabel="$ 3.000.000" itemValue="3000000" />
-                    <f:selectItem itemLabel="$ 4.000.000" itemValue="4000000" />
-                    <f:selectItem itemLabel="$ 5.000.000" itemValue="5000000" />
-                </p:selectOneMenu>
+                    <p:outputLabel value="Nombres:" for="txtNombres" />
+                    <p:inputText id="txtNombres" value="#{nominaBean.nomina.empleado.nombre}" required="true"
+                                 requiredMessage="Faltan los nombres." validatorMessage="Los nombres solo deben contener letras.">
+                        <p:keyFilter regEx="/[a-zA-ZÁÉÍÓÚÜáéíóúüÑñ\s]/" />
+                        <f:validateRegex pattern="^[A-Za-zÁÉÍÓÚÜáéíóúüÑñ]+(\s[A-Za-zÁÉÍÓÚÜáéíóúüÑñ]+)*$" />
+                    </p:inputText>
 
-                <p:outputLabel value="Días Trabajados:" />
-                <p:inputText value="#{nominaBean.diasTrabajados}" 
-                             required="true" 
-                             requiredMessage="Faltan los días trabajados"
-                             validatorMessage="Los días trabajados deben ser entre 1 y 30"
-                             maxlength="2">
-                    <p:keyFilter mask="num" />
-                    <f:validateLongRange minimum="1" maximum="30" />
-                </p:inputText>
+                    <p:outputLabel value="Apellidos:" for="txtApellidos" />
+                    <p:inputText id="txtApellidos" value="#{nominaBean.nomina.empleado.apellido}" required="true"
+                                 requiredMessage="Faltan los apellidos." validatorMessage="Los apellidos solo deben contener letras.">
+                        <p:keyFilter regEx="/[a-zA-ZÁÉÍÓÚÜáéíóúüÑñ\s]/" />
+                        <f:validateRegex pattern="^[A-Za-zÁÉÍÓÚÜáéíóúüÑñ]+(\s[A-Za-zÁÉÍÓÚÜáéíóúüÑñ]+)*$" />
+                    </p:inputText>
 
-                <p:outputLabel value="Período de Nómina:" />
-                <div style="display:flex; gap:10px; width: 100%;">
-                    <p:selectOneMenu value="#{nominaBean.mesSeleccionado}" required="true" requiredMessage="Seleccione el mes" style="flex: 1;">
+                    <p:outputLabel value="Correo Electrónico:" for="txtCorreo" />
+                    <p:inputText id="txtCorreo" value="#{nominaBean.nomina.empleado.correo}" required="true"
+                                 requiredMessage="Falta el correo." validatorMessage="Formato de correo inválido (ejemplo@dominio.com).">
+                        <f:validateRegex pattern="^[\w.+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$" />
+                    </p:inputText>
+
+                    <p:outputLabel value="Cargo:" for="txtCargo" />
+                    <p:inputText id="txtCargo" value="#{nominaBean.nomina.empleado.cargo}" required="true"
+                                 requiredMessage="Falta especificar el cargo." />
+
+                    <p:outputLabel value="Salario Básico:" for="cmbSalario" />
+                    <h:selectOneMenu id="cmbSalario" value="#{nominaBean.nomina.empleado.salarioBasico}" required="true"
+                                     requiredMessage="Seleccione el salario básico." styleClass="campo-select">
+                        <f:selectItem itemLabel="Seleccione..." itemValue="" noSelectionOption="true" />
+                        <f:selectItem itemLabel="$ 1.750.000" itemValue="1750000" />
+                        <f:selectItem itemLabel="$ 2.000.000" itemValue="2000000" />
+                        <f:selectItem itemLabel="$ 2.500.000" itemValue="2500000" />
+                        <f:selectItem itemLabel="$ 3.000.000" itemValue="3000000" />
+                        <f:selectItem itemLabel="$ 4.000.000" itemValue="4000000" />
+                        <f:selectItem itemLabel="$ 5.000.000" itemValue="5000000" />
+                    </h:selectOneMenu>
+
+                    <p:outputLabel value="Días Trabajados:" for="txtDias" />
+                    <p:inputText id="txtDias" value="#{nominaBean.nomina.diasTrabajados}" required="true"
+                                 requiredMessage="Faltan los días trabajados." validatorMessage="Los días trabajados deben estar entre 1 y 30."
+                                 maxlength="2">
+                        <p:keyFilter mask="num" />
+                        <f:validateLongRange minimum="1" maximum="30" />
+                    </p:inputText>
+
+                    <p:outputLabel value="Mes de Nómina:" for="cmbMes" />
+                    <h:selectOneMenu id="cmbMes" value="#{nominaBean.mesSeleccionado}" required="true"
+                                     requiredMessage="Seleccione el mes." styleClass="campo-select">
                         <f:selectItem itemLabel="Mes..." itemValue="#{null}" noSelectionOption="true" />
                         <f:selectItem itemLabel="Enero" itemValue="1" />
                         <f:selectItem itemLabel="Febrero" itemValue="2" />
@@ -89,136 +92,144 @@
                         <f:selectItem itemLabel="Octubre" itemValue="10" />
                         <f:selectItem itemLabel="Noviembre" itemValue="11" />
                         <f:selectItem itemLabel="Diciembre" itemValue="12" />
-                    </p:selectOneMenu>
-                    
-                    <p:selectOneMenu value="#{nominaBean.anioSeleccionado}" required="true" requiredMessage="Seleccione el año" style="flex: 1;">
+                    </h:selectOneMenu>
+
+                    <p:outputLabel value="Año de Nómina:" for="cmbAnio" />
+                    <h:selectOneMenu id="cmbAnio" value="#{nominaBean.anioSeleccionado}" required="true"
+                                     requiredMessage="Seleccione el año." styleClass="campo-select">
                         <f:selectItem itemLabel="Año..." itemValue="#{null}" noSelectionOption="true" />
                         <f:selectItems value="#{nominaBean.aniosDisponibles}" />
-                    </p:selectOneMenu>
+                    </h:selectOneMenu>
+
+                </p:panelGrid>
+
+                <f:facet name="footer">
+                    <p:commandButton value="#{nominaBean.modoEdicion ? 'Guardar Cambios' : 'Calcular y Guardar'}"
+                                     action="#{nominaBean.calcular}" update="@form" icon="pi pi-save" />
+                    <p:commandButton value="#{nominaBean.modoEdicion ? 'Cancelar Edición' : 'Limpiar'}"
+                                     action="#{nominaBean.limpiar}" update="@form" process="@this" styleClass="ui-button-secondary" />
+                </f:facet>
+            </p:panel>
+
+            <!-- 2. RESUMEN DEL CÁLCULO INDIVIDUAL -->
+            <p:panel header="Resultado del Cálculo" styleClass="panel-centrado resultado-panel" rendered="#{nominaBean.mostrarResultados}">
+                <p:panelGrid columns="2" layout="grid">
+                    <p:outputLabel value="Salario Devengado:" />
+                    <h:outputText value="#{nominaBean.nomina.salarioDevengado}">
+                        <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                    </h:outputText>
+
+                    <p:outputLabel value="Auxilio de Transporte:" />
+                    <h:outputText value="#{nominaBean.nomina.auxTransporte}">
+                        <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                    </h:outputText>
+
+                    <p:outputLabel value="Descuento Salud (4%):" />
+                    <h:outputText value="#{nominaBean.nomina.descSalud}">
+                        <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                    </h:outputText>
+
+                    <p:outputLabel value="Descuento Pensión (4%):" />
+                    <h:outputText value="#{nominaBean.nomina.descPension}">
+                        <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                    </h:outputText>
+
+                    <p:outputLabel value="Neto a Pagar:" style="font-weight:bold;" />
+                    <h:outputText value="#{nominaBean.nomina.netoPagar}" styleClass="valor-destacado">
+                        <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                    </h:outputText>
+                </p:panelGrid>
+            </p:panel>
+
+            <!-- 3. TABLA DEL HISTÓRICO DE NÓMINAS GUARDADAS -->
+            <p:panel header="Historial de Nóminas Registradas" styleClass="panel-ancho">
+                <div class="tabla-scroll">
+                    <p:dataTable id="tablaNominas" value="#{nominaBean.listaHistorico}" var="nom"
+                                 emptyMessage="No hay nóminas registradas aún." stripedRows="true" paginator="true" rows="5">
+
+                        <p:column headerText="Documento">
+                            <h:outputText value="#{nom.empleado.docId}" />
+                        </p:column>
+
+                        <p:column headerText="Empleado">
+                            <h:outputText value="#{nom.empleado.obtenerNombreCompleto()}" />
+                        </p:column>
+
+                        <p:column headerText="Cargo">
+                            <h:outputText value="#{nom.empleado.cargo}" />
+                        </p:column>
+
+                        <p:column headerText="Correo">
+                            <h:outputText value="#{nom.empleado.correo}" />
+                        </p:column>
+
+                        <p:column headerText="Mes / Período">
+                            <h:outputText value="#{nom.empleado.getMesNominaLegible(nom.mesNomina)}" />
+                        </p:column>
+
+                        <p:column headerText="Días">
+                            <h:outputText value="#{nom.diasTrabajados}" />
+                        </p:column>
+
+                        <p:column headerText="Salario Básico">
+                            <h:outputText value="#{nom.empleado.salarioBasico}">
+                                <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Salario Devengado">
+                            <h:outputText value="#{nom.salarioDevengado}">
+                                <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Aux. Transporte">
+                            <h:outputText value="#{nom.auxTransporte}">
+                                <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Desc. Salud">
+                            <h:outputText value="#{nom.descSalud}">
+                                <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Desc. Pensión">
+                            <h:outputText value="#{nom.descPension}">
+                                <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Neto a Pagar" styleClass="valor-destacado">
+                            <h:outputText value="#{nom.netoPagar}">
+                                <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Acciones" style="width:120px; text-align:center;">
+                            <p:commandButton icon="pi pi-pencil" title="Editar"
+                                             actionListener="#{nominaBean.prepararEdicion(nom)}"
+                                             update=":frmNomina" process="@this" styleClass="ui-button-info rounded-button"
+                                             style="margin-right:6px;" />
+                            <p:commandButton icon="pi pi-trash" title="Eliminar"
+                                             actionListener="#{nominaBean.eliminar(nom.empleado.docId, nom.mesNomina)}"
+                                             update=":frmNomina" process="@this" styleClass="ui-button-danger rounded-button">
+                                <p:confirm header="Confirmación" message="¿Desea eliminar este registro de nómina?" icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </p:column>
+
+                    </p:dataTable>
                 </div>
-            </p:panelGrid>
+            </p:panel>
 
-            <f:facet name="footer">
-                <p:commandButton value="#{nominaBean.modoEdicion ? 'Guardar Cambios' : 'Calcular y Guardar'}"
-                                  action="#{nominaBean.calcular}" update="@form" icon="pi pi-save" style="margin-right: 15px;" />
-                <p:commandButton value="#{nominaBean.modoEdicion ? 'Cancelar Edición' : 'Limpiar'}"
-                                  action="#{nominaBean.limpiar}" update="@form" process="@this" styleClass="ui-button-secondary" />
-            </f:facet>
-        </p:panel>
+            <!-- DIÁLOGO GLOBAL DE CONFIRMACIÓN -->
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary" icon="pi pi-times" />
+            </p:confirmDialog>
 
-        <!-- Colilla individual con el resultado del último cálculo -->
-        <p:panel header="Resultado del cálculo" styleClass="panel-centrado resultado-panel" rendered="#{nominaBean.mostrarResultados}">
-            <p:panelGrid columns="2" layout="grid">
-                <p:outputLabel value="Salario Devengado:" />
-                <h:outputText value="#{nominaBean.nominaCalculada.salarioDevengado}">
-                    <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                </h:outputText>
-
-                <p:outputLabel value="Auxilio de Transporte:" />
-                <h:outputText value="#{nominaBean.nominaCalculada.auxTransporte}">
-                    <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                </h:outputText>
-
-                <p:outputLabel value="Descuento Salud:" />
-                <h:outputText value="#{nominaBean.nominaCalculada.descSalud}">
-                    <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                </h:outputText>
-
-                <p:outputLabel value="Descuento Pensión:" />
-                <h:outputText value="#{nominaBean.nominaCalculada.descPension}">
-                    <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                </h:outputText>
-
-                <p:outputLabel value="Neto a Pagar:" style="font-weight:bold;" />
-                <h:outputText value="#{nominaBean.nominaCalculada.netoPagar}" style="font-weight:bold; color:green;">
-                    <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                </h:outputText>
-            </p:panelGrid>
-        </p:panel>
-
-        <!-- 2. TABLA CON HISTÓRICO DE EMPLEADOS (DATOS CARGADOS Y CALCULADOS DESDE EL JSON) -->
-        <p:panel header="Historial de Nóminas Guardadas" styleClass="panel-ancho">
-          <div class="tabla-scroll">
-            <p:dataTable id="tablaNominas" value="#{nominaBean.listaHistorico}" var="nom"
-                         emptyMessage="No hay nóminas registradas aún." stripedRows="true" paginator="true" rows="5">
-
-                <p:column headerText="Documento">
-                    <h:outputText value="#{nom.empleado.docId}" />
-                </p:column>
-
-                <p:column headerText="Empleado">
-                    <h:outputText value="#{nom.empleado.obtenerNombreCompleto()}" />
-                </p:column>
-
-                <p:column headerText="Correo">
-                    <h:outputText value="#{nom.empleado.correo}" />
-                </p:column>
-
-                <p:column headerText="Mes">
-                    <h:outputText value="#{nom.empleado.mesNominaLegible}" />
-                </p:column>
-
-                <p:column headerText="Días">
-                    <h:outputText value="#{nom.empleado.diasTrabajados}" />
-                </p:column>
-
-                <p:column headerText="Salario Básico">
-                    <h:outputText value="#{nom.empleado.salarioBasico}">
-                        <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                    </h:outputText>
-                </p:column>
-
-                <p:column headerText="Salario Devengado">
-                    <h:outputText value="#{nom.salarioDevengado}">
-                        <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                    </h:outputText>
-                </p:column>
-
-                <p:column headerText="Aux. Transporte">
-                    <h:outputText value="#{nom.auxTransporte}">
-                        <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                    </h:outputText>
-                </p:column>
-
-                <p:column headerText="Desc. Salud">
-                    <h:outputText value="#{nom.descSalud}">
-                        <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                    </h:outputText>
-                </p:column>
-
-                <p:column headerText="Desc. Pensión">
-                    <h:outputText value="#{nom.descPension}">
-                        <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                    </h:outputText>
-                </p:column>
-
-                <p:column headerText="Neto a Pagar" style="font-weight: bold; color: green;">
-                    <h:outputText value="#{nom.netoPagar}">
-                        <f:convertNumber type="currency" currencySymbol="$ " maxFractionDigits="0" />
-                    </h:outputText>
-                </p:column>
-
-                <p:column headerText="Acciones" style="width:120px; text-align:center;">
-                    <p:commandButton icon="pi pi-pencil" title="Editar"
-                                      actionListener="#{nominaBean.prepararEdicion(nom)}"
-                                      update=":frmNomina" process="@this" styleClass="ui-button-info rounded-button"
-                                      style="margin-right:6px;" />
-                    <p:commandButton icon="pi pi-trash" title="Eliminar"
-                                      actionListener="#{nominaBean.eliminar(nom.empleado.docId, nom.empleado.mesNomina)}"
-                                      update=":frmNomina" process="@this" styleClass="ui-button-danger rounded-button">
-                        <p:confirm header="Confirmar" message="¿Eliminar este registro?" icon="pi pi-exclamation-triangle" />
-                    </p:commandButton>
-                </p:column>
-
-            </p:dataTable>
-          </div>
-        </p:panel>
-
-        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-            <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
-            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
-        </p:confirmDialog>
-
-    </h:form>
+        </h:form>
+    </div>
 </h:body>
 </html>

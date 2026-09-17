@@ -1,4 +1,3 @@
-
 package com.edu.empresa.model;
 
 import java.io.Serializable;
@@ -12,9 +11,7 @@ public class Persona implements Serializable {
     protected String apellido;
     protected String correo;
 
-    public Persona() {
-        
-    }
+    public Persona() {}
 
     public Persona(String docId, String nombre, String apellido, String correo) {
         this.docId = docId;
@@ -23,40 +20,20 @@ public class Persona implements Serializable {
         this.correo = correo;
     }
 
-    public String getDocId() {
-        return docId;
-    }
-
-    public void setDocId(String docId) {
-        this.docId = docId;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
     public String obtenerNombreCompleto() {
         return this.nombre + " " + this.apellido;
     }
-}
 
+    // --- GETTERS Y SETTERS ---
+    public String getDocId() { return docId; }
+    public void setDocId(String docId) { this.docId = docId; }
+
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getApellido() { return apellido; }
+    public void setApellido(String apellido) { this.apellido = apellido; }
+
+    public String getCorreo() { return correo; }
+    public void setCorreo(String correo) { this.correo = correo; }
+}

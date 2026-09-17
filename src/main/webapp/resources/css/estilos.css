@@ -1,0 +1,335 @@
+/* =========================================================
+   Sistema de Gestión de Nómina - Hoja de estilos
+   Compatible con JSF 4 (Jakarta) + PrimeFaces
+   ========================================================= */
+
+/* ---------- 1. Base ---------- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
+    margin: 20px;
+    color: #333;
+}
+
+/* ---------- 2. Paneles ---------- */
+.panel-centrado {
+    max-width: 1000px;
+    margin: 0 auto 30px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .05);
+    border-radius: 8px;
+}
+
+.panel-ancho {
+    max-width: 1400px;
+    margin: 0 auto 30px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .05);
+    border-radius: 8px;
+}
+
+.resultado-panel {
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.resultado-panel .ui-panel-content {
+    background-color: #e3f2fd !important;
+}
+
+.valor-destacado {
+    font-weight: 700;
+    color: #2e7d32;
+    font-size: 1.05em;
+}
+
+/* ---------- 3. Formulario (panelGrid layout="grid") ---------- */
+/* Da aire vertical a cada celda y evita que etiqueta e input se peguen */
+.ui-panelgrid.ui-panelgrid-blank > .ui-panelgrid-content,
+.ui-panelgrid .ui-grid-row {
+    align-items: center;
+}
+
+.ui-panelgrid .ui-grid-row > div,
+.ui-panelgrid .ui-panelgrid-cell {
+    padding: 8px 10px !important;
+    box-sizing: border-box;
+    min-width: 0;          /* clave: permite que el contenido se encoja */
+}
+
+/* Etiquetas alineadas y sin corte */
+.ui-panelgrid .ui-outputlabel,
+label.ui-outputlabel {
+    display: inline-block;
+    font-weight: 600;
+    line-height: 1.6;
+    white-space: normal;
+}
+
+/* Inputs a todo el ancho de su celda */
+.ui-fluid .ui-inputfield,
+.ui-fluid input.ui-inputtext,
+.ui-fluid .ui-selectonemenu {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+input.ui-inputtext,
+.ui-selectonemenu {
+    height: 36px;
+    line-height: 22px;
+}
+
+/* ---------- 4. Select nativo (h:selectOneMenu) — campo-select ---------- */
+/* Ya no depende del widget JS de PrimeFaces: es un <select> HTML normal,
+   así que se ve y funciona igual sin importar si el tema de PrimeFaces carga. */
+select.campo-select,
+select {
+    width: 100%;
+    height: 36px;
+    padding: 6px 30px 6px 10px;
+    border: 1px solid #c9d2db;
+    border-radius: 6px;
+    background-color: #fff;
+    font-family: inherit;
+    font-size: .95rem;
+    color: #333;
+    box-sizing: border-box;
+    cursor: pointer;
+
+    /* flechita propia, ya que quitamos la apariencia nativa del SO */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23555' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+select.campo-select:focus,
+select:focus {
+    outline: none;
+    border-color: #5b9bd5;
+    box-shadow: 0 0 0 2px rgba(91, 155, 213, .25);
+}
+
+/* ---------- 5. Resumen del cálculo ---------- */
+.resultado-panel .ui-grid-row > div {
+    padding: 6px 10px !important;
+}
+
+.resultado-panel .ui-grid-row > div:nth-child(even) {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 6. DataTable del histórico ---------- */
+.tabla-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+}
+
+.tabla-scroll .ui-datatable-tablewrapper table,
+.tabla-scroll table.ui-datatable-table {
+    min-width: 1500px;
+    table-layout: fixed;   /* respeta los anchos definidos abajo */
+    border-collapse: collapse;
+}
+
+/* Encabezados: una sola línea, sin romper palabras */
+.tabla-scroll .ui-datatable thead th {
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+    padding: 10px 8px;
+    font-size: .88rem;
+    background-color: #eef2f7;
+}
+
+.tabla-scroll .ui-datatable tbody td {
+    padding: 9px 8px;
+    vertical-align: middle;
+    font-size: .88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Anchos por columna (orden de las columnas del xhtml) */
+.tabla-scroll .ui-datatable th:nth-child(1),
+.tabla-scroll .ui-datatable td:nth-child(1)  { width: 120px; }  /* Documento        */
+.tabla-scroll .ui-datatable th:nth-child(2),
+.tabla-scroll .ui-datatable td:nth-child(2)  { width: 200px; }  /* Empleado         */
+.tabla-scroll .ui-datatable th:nth-child(3),
+.tabla-scroll .ui-datatable td:nth-child(3)  { width: 150px; }  /* Cargo            */
+.tabla-scroll .ui-datatable th:nth-child(4),
+.tabla-scroll .ui-datatable td:nth-child(4)  { width: 210px; }  /* Correo           */
+.tabla-scroll .ui-datatable th:nth-child(5),
+.tabla-scroll .ui-datatable td:nth-child(5)  { width: 150px; }  /* Mes / Período    */
+.tabla-scroll .ui-datatable th:nth-child(6),
+.tabla-scroll .ui-datatable td:nth-child(6)  { width: 70px;  }  /* Días             */
+.tabla-scroll .ui-datatable th:nth-child(7),
+.tabla-scroll .ui-datatable td:nth-child(7)  { width: 130px; }  /* Salario Básico   */
+.tabla-scroll .ui-datatable th:nth-child(8),
+.tabla-scroll .ui-datatable td:nth-child(8)  { width: 140px; }  /* Salario Devengado*/
+.tabla-scroll .ui-datatable th:nth-child(9),
+.tabla-scroll .ui-datatable td:nth-child(9)  { width: 130px; }  /* Aux. Transporte  */
+.tabla-scroll .ui-datatable th:nth-child(10),
+.tabla-scroll .ui-datatable td:nth-child(10) { width: 120px; }  /* Desc. Salud      */
+.tabla-scroll .ui-datatable th:nth-child(11),
+.tabla-scroll .ui-datatable td:nth-child(11) { width: 120px; }  /* Desc. Pensión    */
+.tabla-scroll .ui-datatable th:nth-child(12),
+.tabla-scroll .ui-datatable td:nth-child(12) { width: 130px; }  /* Neto a Pagar     */
+.tabla-scroll .ui-datatable th:nth-child(13),
+.tabla-scroll .ui-datatable td:nth-child(13) { width: 120px; }  /* Acciones         */
+
+/* Valores numéricos alineados a la derecha (columnas 6 a 12) */
+.tabla-scroll .ui-datatable tbody td:nth-child(n+6):nth-child(-n+12) {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* La columna del período no debe cortarse */
+.tabla-scroll .ui-datatable td:nth-child(5) {
+    white-space: nowrap;
+    text-transform: capitalize;
+}
+
+/* Correo: si no cabe, se recorta con puntos y se ve completo al pasar el mouse */
+.tabla-scroll .ui-datatable td:nth-child(4) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Acciones */
+.tabla-scroll .ui-datatable td:nth-child(13) {
+    text-align: center;
+    white-space: nowrap;
+    overflow: visible;
+}
+
+.rounded-button.ui-button {
+    border-radius: 50% !important;
+    width: 2.1rem;
+    height: 2.1rem;
+    padding: 0;
+}
+
+/* Filas alternas y hover */
+.tabla-scroll .ui-datatable tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+}
+
+.tabla-scroll .ui-datatable tbody tr:hover {
+    background-color: #eaf3fb;
+}
+
+/* Paginador */
+.ui-datatable .ui-paginator {
+    padding: 8px;
+    text-align: center;
+}
+
+/* ---------- 7. Botones del footer ---------- */
+.ui-panel-footer .ui-button {
+    margin-right: 12px;
+    margin-top: 4px;
+}
+
+/* ---------- 8. Mensajes de validación ---------- */
+.ui-message-error,
+.ui-growl {
+    z-index: 3000;
+}
+
+/* ---------- 8b. Fallback: PrimeFaces sin tema cargado ---------- */
+/* input[type=text] estándar por si ui-inputtext no trae estilo del tema */
+input.ui-inputtext,
+input[type="text"] {
+    border: 1px solid #c9d2db;
+    border-radius: 6px;
+    padding: 6px 10px;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+input.ui-inputtext:focus,
+input[type="text"]:focus {
+    outline: none;
+    border-color: #5b9bd5;
+    box-shadow: 0 0 0 2px rgba(91, 155, 213, .25);
+}
+
+/* Encabezado de p:panel: si el tema no pone fondo, se lo damos nosotros */
+.ui-panel .ui-panel-titlebar,
+.ui-panel .ui-panel-title {
+    background-color: #eef2f7;
+    padding: 12px 16px;
+    font-weight: 700;
+    border-bottom: 1px solid #dfe4ea;
+    border-radius: 8px 8px 0 0;
+}
+
+.ui-panel .ui-panel-content {
+    padding: 16px;
+}
+
+.ui-panel .ui-panel-footer {
+    padding: 12px 16px;
+    border-top: 1px solid #eee;
+    background-color: #fafbfc;
+    border-radius: 0 0 8px 8px;
+}
+
+/* Botones: aspecto propio si ui-button del tema no llega */
+.ui-button,
+button.ui-button,
+input.ui-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #2e7d32;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ui-button:hover {
+    filter: brightness(1.08);
+}
+
+.ui-button-secondary {
+    background-color: #6c757d;
+}
+
+.ui-button-info {
+    background-color: #1976d2;
+}
+
+.ui-button-danger {
+    background-color: #c62828;
+}
+
+/* ---------- 9. Responsive ---------- */
+@media (max-width: 992px) {
+    body { margin: 10px; }
+
+    /* Una etiqueta + un campo por fila */
+    .ui-panelgrid .ui-grid-row > div {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .tabla-scroll .ui-datatable thead th,
+    .tabla-scroll .ui-datatable tbody td {
+        font-size: .82rem;
+    }
+}

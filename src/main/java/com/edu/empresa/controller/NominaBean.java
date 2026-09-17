@@ -17,32 +17,30 @@ import java.util.regex.Pattern;
 @ViewScoped
 public class NominaBean implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    //validación
+    
     private static final Pattern PATRON_NUMEROS = Pattern.compile("^\\d+$");
     private static final Pattern PATRON_LETRAS = Pattern.compile("^[A-Za-zÁÉÍÓÚÜáéíóúüÑñ\\s]+$");
     private static final Pattern PATRON_CORREO = Pattern.compile("^[\\w.+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
     
-    private String nombres, apellidos, identificacion, correo;
-    private double salarioBasico;
-    private int diasTrabajados = 30;
-    private Integer mesSeleccionado, anioSeleccionado;
-
-    
-    private Nomina nominaCalculada;
+    private Nomina nomina;
     private List<Nomina> listaHistorico;
     private NominaService nominaService;
-    private boolean mostrarResultados;
+    private boolean modoEdicion;
 
     
-    private boolean modoEdicion;
-    private String idOriginal, mesOriginal;
+    private Integer mesSeleccionado;
+    private Integer anioSeleccionado;
+    private String idOriginal;
+    private String mesOriginal;
+    private boolean mostrarResultados;
 
     @PostConstruct
     public void init() {
         nominaService = new NominaService();
+        limpiar();
         cargarHistorico();
     }
 
@@ -50,62 +48,78 @@ public class NominaBean implements Serializable {
         try {
             listaHistorico = nominaService.obtenerHistorico();
         } catch (Exception e) {
-            mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo cargar el archivo JSON.");
+            mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo cargar la información de nóminas.");
         }
     }
 
     public void calcular() {
         try {
             validarFormatoCampos();
+            
             String mesTexto = String.format("%04d-%02d", anioSeleccionado, mesSeleccionado);
-            Empleado emp = new Empleado(identificacion, nombres, apellidos, correo, salarioBasico, diasTrabajados, mesTexto);
+            nomina.setMesNomina(mesTexto);
 
             Nomina resultadoTemporal;
 
             if (modoEdicion) {
-                resultadoTemporal = nominaService.actualizarNomina(idOriginal, mesOriginal, emp);
+                resultadoTemporal = nominaService.actualizarNomina(
+                    idOriginal, 
+                    mesOriginal, 
+                    nomina.getEmpleado(), 
+                    nomina.getMesNomina(), 
+                    nomina.getDiasTrabajados()
+                );
                 mostrarMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Nómina actualizada correctamente.");
             } else {
-                resultadoTemporal = nominaService.guardarNuevaNomina(emp);
+                resultadoTemporal = nominaService.guardarNuevaNomina(
+                    nomina.getEmpleado(), 
+                    nomina.getMesNomina(), 
+                    nomina.getDiasTrabajados()
+                );
                 mostrarMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Nómina guardada correctamente.");
             }
 
             cargarHistorico();
-            
             limpiar();
+
             
-            
-            this.nominaCalculada = resultadoTemporal;
-            this.mostrarResultados = true; 
+            this.nomina = resultadoTemporal;
+            this.mostrarResultados = true;
 
         } catch (Exception e) {
             mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
         }
     }
-    public void prepararEdicion(Nomina nomina) {
-        Empleado emp = nomina.getEmpleado();
+
+    public void prepararEdicion(Nomina nominaSeleccionada) {
+        Empleado emp = nominaSeleccionada.getEmpleado();
         
         
-        this.identificacion = emp.getDocId();
-        this.nombres = emp.getNombre();
-        this.apellidos = emp.getApellido();
-        this.correo = emp.getCorreo();
-        this.salarioBasico = emp.getSalarioBasico();
-        this.diasTrabajados = emp.getDiasTrabajados();
+        Empleado empEdicion = new Empleado(
+            emp.getDocId(), 
+            emp.getNombre(), 
+            emp.getApellido(), 
+            emp.getCorreo(), 
+            emp.getSalarioBasico(), 
+            emp.getCargo()
+        );
         
-        
+        this.nomina = new Nomina(empEdicion);
+        this.nomina.setDiasTrabajados(nominaSeleccionada.getDiasTrabajados());
+        this.nomina.setMesNomina(nominaSeleccionada.getMesNomina());
+
         try {
-            String[] partes = emp.getMesNomina().split("-");
+            String[] partes = nominaSeleccionada.getMesNomina().split("-");
             this.anioSeleccionado = Integer.parseInt(partes[0]);
             this.mesSeleccionado = Integer.parseInt(partes[1]);
+            
         } catch (Exception e) {
             this.anioSeleccionado = null;
             this.mesSeleccionado = null;
         }
 
-        
         this.idOriginal = emp.getDocId();
-        this.mesOriginal = emp.getMesNomina();
+        this.mesOriginal = nominaSeleccionada.getMesNomina();
         this.modoEdicion = true;
         this.mostrarResultados = false;
     }
@@ -125,32 +139,20 @@ public class NominaBean implements Serializable {
     }
 
     public void limpiar() {
-        this.nombres = this.apellidos = this.identificacion = this.correo = "";
-        this.salarioBasico = 0;
-        this.diasTrabajados = 30;
-        this.mesSeleccionado = this.anioSeleccionado = null;
+        Empleado empNuevo = new Empleado("", "", "", "", 0.0, "");
+        this.nomina = new Nomina(empNuevo);
+        this.nomina.setDiasTrabajados(30);
         
-        this.nominaCalculada = null;
-        this.mostrarResultados = false;
+        this.mesSeleccionado = null;
+        this.anioSeleccionado = null;
         this.modoEdicion = false;
-        this.idOriginal = this.mesOriginal = null;
-    }
-
-    private void validarFormatoCampos() {
-        if (mesSeleccionado == null || anioSeleccionado == null) throw new IllegalArgumentException("Selecciona el mes y el año.");
-        if (identificacion == null || !PATRON_NUMEROS.matcher(identificacion.trim()).matches()) throw new IllegalArgumentException("La identificación debe contener solo números.");
-        if (nombres == null || !PATRON_LETRAS.matcher(nombres.trim()).matches()) throw new IllegalArgumentException("Los nombres solo deben contener letras.");
-        if (apellidos == null || !PATRON_LETRAS.matcher(apellidos.trim()).matches()) throw new IllegalArgumentException("Los apellidos solo deben contener letras.");
-        if (correo == null || !PATRON_CORREO.matcher(correo.trim()).matches()) throw new IllegalArgumentException("El correo no tiene un formato válido.");
-        if (diasTrabajados < 1 || diasTrabajados > ConstantesNomina.DIAS_MES) throw new IllegalArgumentException("Días trabajados inválidos (1 - " + ConstantesNomina.DIAS_MES + ").");
-    }
-
-    
-    private void mostrarMensaje(FacesMessage.Severity severidad, String titulo, String detalle) {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severidad, titulo, detalle));
+        this.mostrarResultados = false;
+        this.idOriginal = null;
+        this.mesOriginal = null;
     }
 
     public List<Integer> getAniosDisponibles() {
+    	
         int anioActual = Year.now().getValue();
         List<Integer> anios = new ArrayList<>();
         for (int a = anioActual; a >= anioActual - 5; a--) {
@@ -158,34 +160,40 @@ public class NominaBean implements Serializable {
         }
         return anios;
     }
+
+    private void validarFormatoCampos() {
+        Empleado emp = nomina.getEmpleado();
+        if (mesSeleccionado == null || anioSeleccionado == null) throw new IllegalArgumentException("Selecciona el mes y el año.");
+        if (emp.getDocId() == null || !PATRON_NUMEROS.matcher(emp.getDocId().trim()).matches()) throw new IllegalArgumentException("La identificación debe contener solo números.");
+        if (emp.getNombre() == null || !PATRON_LETRAS.matcher(emp.getNombre().trim()).matches()) throw new IllegalArgumentException("Los nombres solo deben contener letras.");
+        if (emp.getApellido() == null || !PATRON_LETRAS.matcher(emp.getApellido().trim()).matches()) throw new IllegalArgumentException("Los apellidos solo deben contener letras.");
+        if (emp.getCorreo() == null || !PATRON_CORREO.matcher(emp.getCorreo().trim()).matches()) throw new IllegalArgumentException("El correo no tiene un formato válido.");
+        if (nomina.getDiasTrabajados() < 1 || nomina.getDiasTrabajados() > 30) throw new IllegalArgumentException("Días trabajados inválidos (1 - 30).");
+    }
+
+    private void mostrarMensaje(FacesMessage.Severity severidad, String titulo, String detalle) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severidad, titulo, detalle));
+    }
+
     
-    // --- GETTERS Y SETTERS ---
+    public Nomina getNomina() { return nomina; }
+    public void setNomina(Nomina nomina) { this.nomina = nomina; }
+
     public List<Nomina> getListaHistorico() { return listaHistorico; }
     public void setListaHistorico(List<Nomina> listaHistorico) { this.listaHistorico = listaHistorico; }
 
-    public String getNombres() { return nombres; }
-    public void setNombres(String nombres) { this.nombres = nombres; }
-    public String getApellidos() { return apellidos; }
-    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
-    public String getIdentificacion() { return identificacion; }
-    public void setIdentificacion(String identificacion) { this.identificacion = identificacion; }
-    public String getCorreo() { return correo; }
-    public void setCorreo(String correo) { this.correo = correo; }
-    public double getSalarioBasico() { return salarioBasico; }
-    public void setSalarioBasico(double salarioBasico) { this.salarioBasico = salarioBasico; }
-    public int getDiasTrabajados() { return diasTrabajados; }
-    public void setDiasTrabajados(int diasTrabajados) { this.diasTrabajados = diasTrabajados; }
+    public NominaService getNominaService() { return nominaService; }
+    public void setNominaService(NominaService nominaService) { this.nominaService = nominaService; }
+
+    public boolean isModoEdicion() { return modoEdicion; }
+    public void setModoEdicion(boolean modoEdicion) { this.modoEdicion = modoEdicion; }
+
     public Integer getMesSeleccionado() { return mesSeleccionado; }
     public void setMesSeleccionado(Integer mesSeleccionado) { this.mesSeleccionado = mesSeleccionado; }
+
     public Integer getAnioSeleccionado() { return anioSeleccionado; }
     public void setAnioSeleccionado(Integer anioSeleccionado) { this.anioSeleccionado = anioSeleccionado; }
 
-
-    public Nomina getNominaCalculada() { return nominaCalculada; }
-    public void setNominaCalculada(Nomina nominaCalculada) { this.nominaCalculada = nominaCalculada; }
     public boolean isMostrarResultados() { return mostrarResultados; }
     public void setMostrarResultados(boolean mostrarResultados) { this.mostrarResultados = mostrarResultados; }
-    public boolean isModoEdicion() { return modoEdicion; }
-    public void setModoEdicion(boolean modoEdicion) { this.modoEdicion = modoEdicion; }
 }
-
